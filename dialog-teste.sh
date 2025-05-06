@@ -85,9 +85,9 @@ search() {
 while true; do
     choice=$(dialog --clear --stdout --title "Main Menu" \
         --menu "Choose an option:" 20 50 10 \
-        1 "Check Status" \
-        2 "Start Service" \
-        3 "Stop Service" \
+        1 "Update" \
+        2 "Upgrade" \
+        3 "Fix missing" \
         4 "Install" \
         5 "Remove" \
         6 "Clean" \
