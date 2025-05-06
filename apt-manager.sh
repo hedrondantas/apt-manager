@@ -1,56 +1,108 @@
 #!/bin/bash
 
-# Lista de opções
-options=("Update" "Install package" "Remove package" "Clean" "Exit")
-selected=0
+# Checks if 'dialog' is installed
+if ! command -v dialog &> /dev/null; then
+    echo "'dialog' is not installed. Install it with: sudo apt install dialog"
+    exit 1
+fi
 
-# Função para desenhar o menu
-draw_menu() {
-  clear
-  echo "===== MENU INTERATIVO ====="
-  for i in "${!options[@]}"; do
-    if [[ $i -eq $selected ]]; then
-      echo -e "> \e[1;32m${options[$i]}\e[0m"  # Verde para o item selecionado
+# Functions that will be called by the menu options
+update() {
+    sudo apt update
+    if [ $? -eq 0 ]; then
+        dialog --msgbox "Update completed successfully!" 6 40
     else
-      echo "  ${options[$i]}"
+        dialog --msgbox "Update failed!" 6 40
     fi
-  done
 }
 
-# Loop de seleção
-while true; do
-  draw_menu
-  read -rsn1 key  # Lê uma tecla (sem exibir na tela)
+upgrade() {
+   sudo apt upgrade
+    if [ $? -eq 0 ]; then
+        dialog --msgbox "Upgrade completed successfully!" 6 40
+    else
+        dialog --msgbox "Upgrade failed!" 6 40
+    fi
+}
 
-  if [[ $key == $'\x1b' ]]; then  # Se for uma tecla especial (seta)
-    read -rsn2 key
-    case $key in
-      "[A")  # Seta para cima
-        ((selected--))
-        ((selected < 0)) && selected=$((${#options[@]} - 1))
-        ;;
-      "[B")  # Seta para baixo
-        ((selected++))
-        ((selected >= ${#options[@]})) && selected=0
-        ;;
+fix_missing() {
+    sudo apt --fix-broken install
+    if [ $? -eq 0 ]; then
+        dialog --msgbox "Fix missing dependencies completed successfully!" 6 40
+    else
+        dialog --msgbox "Fix missing dependencies failed!" 6 40
+    fi
+}
+
+install() {
+    package_name=$(dialog --inputbox "Enter the package name to install:" 8 40 3>&1 1>&2 2>&3 3>&-)
+    if [ $? -eq 0 ]; then
+        sudo apt install "$package_name"
+        if [ $? -eq 0 ]; then
+            dialog --msgbox "Installation of $package_name completed successfully!" 6 40
+        else
+            dialog --msgbox "Installation of $package_name failed!" 6 40
+        fi
+    else
+        dialog --msgbox "Installation canceled!" 6 40
+    fi
+}
+
+remove() {
+    package_name=$(dialog --inputbox "Enter the package name to remove:" 8 40 3>&1 1>&2 2>&3 3>&-)
+    if [ $? -eq 0 ]; then
+        sudo apt remove "$package_name"
+        if [ $? -eq 0 ]; then
+            dialog --msgbox "Removal of $package_name completed successfully!" 6 40
+        else
+            dialog --msgbox "Removal of $package_name failed!" 6 40
+        fi
+    else
+        dialog --msgbox "Removal canceled!" 6 40
+    fi
+}
+
+clean() {
+    sudo apt clean
+    if [ $? -eq 0 ]; then
+        dialog --msgbox "Clean completed successfully!" 6 40
+    else
+        dialog --msgbox "Clean failed!" 6 40
+    fi
+}
+
+search() {
+    package_name=$(dialog --inputbox "Enter the package name to search:" 8 40 3>&1 1>&2 2>&3 3>&-)
+    if [ $? -eq 0 ]; then
+        search_result=$(apt search "$package_name" 2>/dev/null)
+        dialog --msgbox "Search results:\n\n$search_result" 20 70
+    else
+        dialog --msgbox "Search canceled!" 6 40
+    fi
+}
+
+# Main menu loop
+while true; do
+    choice=$(dialog --clear --stdout --title "Main Menu" \
+        --menu "Choose an option:" 20 50 10 \
+        1 "Update" \
+        2 "Upgrade" \
+        3 "Install" \
+        4 "Remove" \
+        5 "Search" \
+        6 "Fix missing" \
+        7 "Clean" \
+        8 "Exit")
+
+    case $choice in
+        1) update ;;
+        2) upgrade ;;
+        3) install ;;
+        4) remove ;;
+        5) search ;;
+        6) fix_missing ;;
+        7) clean ;;
+        8) clear; echo "Exiting..."; break ;;
+        *) break ;;
     esac
-  elif [[ $key == "" ]]; then  # Enter
-    clear
-    echo "Você escolheu: ${options[$selected]}"
-    case ${options[$selected]} in
-      "Update")
-        sudo apt update ;;
-      "Install package")
-        read -p "Digite o nome do pacote: " pkg
-        sudo apt install -y "$pkg" ;;
-      "Remove package")
-        read -p "Digite o nome do pacote: " pkg
-        sudo apt remove -y "$pkg" ;;
-      "Clean")
-        sudo apt autoremove -y && sudo apt clean ;;
-      "Exit")
-        exit 0 ;;
-    esac
-    read -p "Pressione Enter para voltar ao menu..."
-  fi
 done
