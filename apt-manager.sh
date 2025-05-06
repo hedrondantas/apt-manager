@@ -81,6 +81,15 @@ search() {
     fi
 }
 
+check_repositories() {
+    repo_list=$(cat /etc/apt/sources.list 2>/dev/null)
+    if [ $? -eq 0 ]; then
+        dialog --msgbox "Repositories:\n\n$repo_list" 20 70
+    else
+        dialog --msgbox "Failed to retrieve repositories!" 6 40
+    fi
+}
+
 # Main menu loop
 while true; do
     choice=$(dialog --clear --stdout --title "Main Menu" \
@@ -92,7 +101,8 @@ while true; do
         5 "Search" \
         6 "Fix missing" \
         7 "Clean" \
-        8 "Exit")
+        8 "Check Repositories" \
+        9 "Exit")
 
     case $choice in
         1) update ;;
@@ -102,7 +112,8 @@ while true; do
         5) search ;;
         6) fix_missing ;;
         7) clean ;;
-        8) clear; echo "Exiting..."; break ;;
+        8) check_repositories ;;
+        9) clear; echo "Exiting..."; break ;;
         *) break ;;
     esac
 done
