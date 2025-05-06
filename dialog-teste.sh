@@ -71,15 +71,6 @@ clean() {
     fi
 }
 
-dpkg_reconfigure() {
-    sudo dpkg-reconfigure -a
-    if [ $? -eq 0 ]; then
-        dialog --msgbox "DPKG reconfigure completed successfully!" 6 40
-    else
-        dialog --msgbox "DPKG reconfigure failed!" 6 40
-    fi
-}
-
 search() {
     package_name=$(dialog --inputbox "Enter the package name to search:" 8 40 3>&1 1>&2 2>&3 3>&-)
     if [ $? -eq 0 ]; then
@@ -100,9 +91,8 @@ while true; do
         4 "Install" \
         5 "Remove" \
         6 "Clean" \
-        7 "DPKG Reconfigure" \
-        8 "Search" \
-        9 "Exit")
+        7 "Search" \
+        8 "Exit")
 
     case $choice in
         1) update ;;
@@ -111,9 +101,8 @@ while true; do
         4) install ;;
         5) remove ;;
         6) clean ;;
-        7) dpkg_reconfigure ;;
-        8) search ;;
-        9) clear; echo "Exiting..."; break ;;
+        7) search ;;
+        8) clear; echo "Exiting..."; break ;;
         *) break ;;
     esac
 done
