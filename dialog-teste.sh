@@ -87,21 +87,21 @@ while true; do
         --menu "Choose an option:" 20 50 10 \
         1 "Update" \
         2 "Upgrade" \
-        3 "Fix missing" \
-        4 "Install" \
-        5 "Remove" \
-        6 "Clean" \
-        7 "Search" \
+        3 "Install" \
+        4 "Remove" \
+        5 "Search" \
+        6 "Fix missing" \
+        7 "Clean" \
         8 "Exit")
 
     case $choice in
         1) update ;;
         2) upgrade ;;
-        3) fix_missing ;;
-        4) install ;;
-        5) remove ;;
-        6) clean ;;
-        7) search ;;
+        3) install ;;
+        4) remove ;;
+        5) search ;;
+        6) fix_missing ;;
+        7) clean ;;
         8) clear; echo "Exiting..."; break ;;
         *) break ;;
     esac
