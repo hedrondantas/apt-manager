@@ -3,7 +3,14 @@
 # Checks if 'dialog' is installed
 if ! command -v dialog &> /dev/null; then
     echo "'dialog' is not installed. Install it with: sudo apt install dialog"
-    exit 1
+    
+    read -p "Do you want to install dialog? (y/n) " answer
+    if [[ $answer == "y" || $answer == "Y" ]]; then
+            sudo apt install dialog -y
+    else
+        echo "dialog is required for this script to run. Exiting..."
+        exit 1
+    fi
 fi
 
 # Functions that will be called by the menu options

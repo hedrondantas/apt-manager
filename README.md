@@ -1,7 +1,3 @@
 # apt-manager
 
-a simple script to manage apt on ubuntu
-
-# todo
-
-use dialog
+a simple script to manage apt on ubuntu using dialog
