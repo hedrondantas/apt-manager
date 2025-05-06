@@ -84,7 +84,7 @@ search() {
 check_repositories() {
     repo_list=$(cat /etc/apt/sources.list 2>/dev/null)
     if [ $? -eq 0 ]; then
-        dialog --msgbox "Repositories:\n\n$repo_list" 20 70
+        dialog --msgbox "Repositories:\n\n$repo_list" 30 120
     else
         dialog --msgbox "Failed to retrieve repositories!" 6 40
     fi
